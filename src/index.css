@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    body {
+        @apply bg-paper text-ink antialiased overflow-x-hidden;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+        @apply tracking-tight;
+    }
+
+    p {
+        @apply tracking-tight;
+    }
+}
+
+@layer utilities {
+    .bg-dot-grid {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -10;
+        pointer-events: none;
+        background-color: transparent;
+        background-image: radial-gradient(#E2E8F0 1px, transparent 1px);
+        background-size: 24px 24px;
+    }
+
+    .dark .bg-dot-grid {
+        background-image: radial-gradient(#1E293B 1px, transparent 1px);
+    }
+
+    .glass-card {
+        @apply backdrop-blur-md transition-all duration-300;
+    }
+
+    .light .glass-card {
+        @apply bg-slate-50/50 border-slate-200/50;
+    }
+
+    .dark .glass-card {
+        @apply bg-white/10 border-white/10;
+    }
+
+    .modern-card {
+        @apply rounded-2xl transition-all duration-300;
+    }
+    
+    .modern-card:hover {
+        @apply scale-[1.02] border-emerald-500/100;
+        box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+    }
+
+    .content-layer {
+        @apply relative z-10;
+    }
+}
+
+#globe-container {
+    position: absolute;
+    top: 55%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 900px;
+    height: 900px;
+    z-index: 0;
+    opacity: 0.5;
+    pointer-events: auto;
+    mask-image: radial-gradient(circle, black 30%, transparent 70%);
+    -webkit-mask-image: radial-gradient(circle, black 30%, transparent 70%);
+}
+
+@media (max-width: 768px) {
+    #globe-container {
+        width: 500px;
+        height: 500px;
+        top: 45%;
+    }
+}
