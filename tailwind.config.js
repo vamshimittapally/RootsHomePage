@@ -9,6 +9,8 @@ export default {
     extend: {
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
+        serif: ['"Instrument Serif"', 'serif'],
+        'open-sans': ['"Open Sans"', 'sans-serif'],
       },
       colors: {
         paper: '#ffffff',
@@ -41,8 +43,13 @@ export default {
       },
       animation: {
         'fade-up': 'fadeUp 0.6s ease-out forwards',
+        'shimmer': 'shimmer 8s linear infinite',
       },
       keyframes: {
+        shimmer: {
+          '0%': { backgroundPosition: '0% 50%' },
+          '100%': { backgroundPosition: '200% 50%' },
+        },
         fadeUp: {
           '0%': { opacity: '0', transform: 'translateY(10px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },

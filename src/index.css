@@ -29,12 +29,13 @@
         z-index: -10;
         pointer-events: none;
         background-color: transparent;
-        background-image: radial-gradient(#E2E8F0 1px, transparent 1px);
+        color: #E2E8F0;
+        background-image: radial-gradient(currentColor 1px, transparent 1px);
         background-size: 24px 24px;
     }
 
     .dark .bg-dot-grid {
-        background-image: radial-gradient(#1E293B 1px, transparent 1px);
+        color: #1E293B;
     }
 
     .glass-card {
