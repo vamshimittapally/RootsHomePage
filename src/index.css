@@ -53,7 +53,7 @@
     .modern-card {
         @apply rounded-2xl transition-all duration-300;
     }
-    
+
     .modern-card:hover {
         @apply scale-[1.02] border-emerald-500/100;
         box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
@@ -61,6 +61,13 @@
 
     .content-layer {
         @apply relative z-10;
+    }
+
+    /* GPU acceleration for smooth animations */
+    .gpu-accelerate {
+        will-change: transform, opacity;
+        transform: translateZ(0);
+        backface-visibility: hidden;
     }
 }
 

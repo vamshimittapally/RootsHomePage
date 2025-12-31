@@ -1,28 +1,35 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, memo } from 'react';
 import createGlobe from 'cobe';
 import { motion } from 'framer-motion';
 import { ArrowDown, Zap, Anchor, Filter, Wind, Moon, Sun, Hexagon, Leaf } from 'lucide-react';
+import Roots41Logo from './components/Logo';
 
-function App() {
-  const canvasRef = useRef();
-  const [isDarkMode, setIsDarkMode] = useState(false);
+// Interface as requested for Philosophy Cards
+export interface CardProps {
+  number?: string;
+  icon?: React.ReactNode;
+  label: string;
+  description: string;
+  delay: number;
+}
 
-  // Toggle Dark Mode
-  useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDarkMode]);
+// Memoized Globe component to prevent unnecessary re-renders
+interface GlobeProps {
+  isDarkMode: boolean;
+}
+
+const Globe = memo(function Globe({ isDarkMode }: GlobeProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     let phi = 0;
 
     // Theme-Aware Color Palette for Globe
-    const baseColor = isDarkMode ? [255 / 255, 215 / 255, 0 / 255] : [148 / 255, 163 / 255, 184 / 255]; // Gold (#FFD700) vs Slate-400 (#94A3B8)
-    const markerColor = isDarkMode ? [255 / 255, 215 / 255, 0 / 255] : [148 / 255, 163 / 255, 184 / 255];
-    const glowColor = isDarkMode ? [255 / 255, 215 / 255, 0 / 255] : [148 / 255, 163 / 255, 184 / 255];
+    const baseColor: [number, number, number] = isDarkMode ? [255 / 255, 215 / 255, 0 / 255] : [148 / 255, 163 / 255, 184 / 255];
+    const markerColor: [number, number, number] = isDarkMode ? [255 / 255, 215 / 255, 0 / 255] : [148 / 255, 163 / 255, 184 / 255];
+    const glowColor: [number, number, number] = isDarkMode ? [255 / 255, 215 / 255, 0 / 255] : [148 / 255, 163 / 255, 184 / 255];
+
+    if (!canvasRef.current) return;
 
     const globe = createGlobe(canvasRef.current, {
       devicePixelRatio: 2,
@@ -50,22 +57,38 @@ function App() {
         { location: [1.3521, 103.8198], size: 0.07 },
         { location: [52.5200, 13.4050], size: 0.07 },
       ],
-      onRender: (state) => {
-        state.phi = phi
-        phi += 0.003
+      onRender: (state: any) => {
+        state.phi = phi;
+        phi += 0.003;
       },
     });
-
-    // Applying Glow Effect for Night-Lights (via shadow on the parent if needed, 
-    // but Cobe doesn't natively support shadowBlur on markers. 
-    // We approximate by increasing marker size and opacity in dark mode.)
 
     return () => {
       globe.destroy();
     };
   }, [isDarkMode]);
 
-  const scrollToSection = (id) => {
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{ width: '100%', height: '100%', willChange: 'transform' }}
+    />
+  );
+});
+
+function App() {
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  // Toggle Dark Mode
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [isDarkMode]);
+
+  const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
@@ -80,16 +103,7 @@ function App() {
       <nav className={`fixed w-full top-0 left-0 backdrop-blur-md border-b z-50 transition-colors duration-300 ${isDarkMode ? 'bg-slate-900/90 border-slate-800' : 'bg-white/90 border-gray-100'}`}>
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 cursor-pointer group">
-            <svg width="28" height="28" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="group-hover:rotate-6 transition-transform duration-300">
-              <path d="M50 45 C 50 45, 50 70, 50 75 C 50 85, 40 90, 30 95" stroke={isDarkMode ? "#fff" : "#111"} strokeWidth="5" strokeLinecap="round" />
-              <path d="M50 75 C 50 85, 60 90, 70 95" stroke={isDarkMode ? "#fff" : "#111"} strokeWidth="5" strokeLinecap="round" />
-              <path d="M50 75 C 50 85, 50 92, 50 98" stroke={isDarkMode ? "#fff" : "#111"} strokeWidth="5" strokeLinecap="round" />
-              <path d="M50 45 C 50 45, 30 55, 25 50" stroke={isDarkMode ? "#fff" : "#111"} strokeWidth="5" strokeLinecap="round" />
-              <path d="M50 45 C 50 45, 70 55, 75 50" stroke={isDarkMode ? "#fff" : "#111"} strokeWidth="5" strokeLinecap="round" />
-              <circle cx="50" cy="20" r="6" fill={isDarkMode ? "#FFD700" : "#6B8274"} />
-              <circle cx="35" cy="25" r="5" fill={isDarkMode ? "#FFD700" : "#8DA399"} />
-              <circle cx="65" cy="25" r="5" fill={isDarkMode ? "#FFD700" : "#8DA399"} />
-            </svg>
+            <Roots41Logo className="w-7 h-7 group-hover:rotate-6 transition-transform duration-300" />
             <span className={`font-bold text-lg tracking-tight ${isDarkMode ? 'text-white' : 'text-ink'}`}>Roots41</span>
           </div>
 
@@ -116,10 +130,10 @@ function App() {
       {/* Hero Section */}
       <header className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
         <div id="globe-container" className={isDarkMode ? "before:content-[''] before:absolute before:inset-0 before:bg-[#FFD700]/5 before:rounded-full before:blur-[100px]" : ""}>
-          <canvas ref={canvasRef} style={{ width: '100%', height: '100%' }}></canvas>
+          <Globe isDarkMode={isDarkMode} />
         </div>
 
-        <div className="content-layer max-w-3xl mx-auto px-6 text-center relative pointer-events-none">
+        <div className="content-layer gpu-accelerate max-w-3xl mx-auto px-6 text-center relative pointer-events-none">
           {/* Visual Depth: Emerald Blob */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-emerald-500/20 blur-[120px] rounded-full -z-10 mix-blend-screen pointer-events-none"></div>
 
@@ -246,6 +260,7 @@ function App() {
                   whileInView={{ opacity: 1, y: 0, scale: 1 }}
                   transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.1 }}
                   whileHover={{ scale: 1.05 }}
+                  style={{ willChange: 'transform, opacity' }}
                   className={`md:col-start-1 md:mt-0 p-6 rounded-2xl border backdrop-blur-md transition-all duration-500 opacity-60 grayscale hover:grayscale-0 hover:opacity-100 shadow-lg ${isDarkMode ? 'bg-white/5 border-white/10' : 'bg-slate-50/80 border-slate-200'}`}
                 >
                   <div className="flex items-center gap-3 mb-3">
@@ -265,6 +280,7 @@ function App() {
                     rotate: [-0.5, 0.5, -0.5],
                     transition: { rotate: { repeat: Infinity, duration: 0.3 } }
                   }}
+                  style={{ willChange: 'transform, opacity' }}
                   className={`md:col-start-2 md:mt-32 p-6 rounded-2xl border backdrop-blur-md relative overflow-hidden group hover:drop-shadow-[0_0_15px_#FFD700] transition-all duration-300 ${isDarkMode ? 'bg-slate-900/80 border-yellow-500/30' : 'bg-white/90 border-amber-200'}`}
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -285,6 +301,7 @@ function App() {
                   whileInView={{ opacity: 1, y: 0, scale: 1 }}
                   transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.7 }}
                   whileHover={{ scale: 1.05 }}
+                  style={{ willChange: 'transform, opacity' }}
                   className={`md:col-start-3 md:mt-64 p-6 rounded-2xl border backdrop-blur-md relative overflow-hidden group ${isDarkMode ? 'bg-emerald-900/20 border-emerald-500/30' : 'bg-sage-50/90 border-sage-200'}`}
                 >
                   {/* Holographic Shimmer */}
