@@ -1,3 +1,4 @@
+import React from 'react';
 import { Anchor, Filter, Wind } from 'lucide-react';
 
 export interface FeaturesProps {
